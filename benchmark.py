@@ -20,7 +20,7 @@ def disable_logging():
     log.setLevel(logging.CRITICAL)
     log.propagate = 0
 
-data = 10**1 * ["foo"]
+data = 10**3 * ["foo"]
 
 def command():
     db.sadd("test", "bar")

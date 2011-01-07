@@ -36,7 +36,7 @@ def transaction():
 
 def time(func, repeat=3, number=10e4):
     name = func.__name__
-    setup = "from __main__ import %s" % name
+    setup = "from __main__ import %s, db; db.flushdb()" % name
     timer = timeit.Timer(stmt="%s()" % name, setup=setup)
 
     seconds = min(timer.repeat(repeat=repeat, number=int(number)))

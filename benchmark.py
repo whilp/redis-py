@@ -20,8 +20,19 @@ def disable_logging():
     log.setLevel(logging.CRITICAL)
     log.propagate = 0
 
+data = 10**1 * ["foo"]
+
 def command():
-    db.set("foo", "bar")
+    db.sadd("test", "bar")
+
+def pipeline(transaction=False):
+    pipe = db.pipeline(transaction=transaction)
+    for item in data:
+        pipe.sadd("test", item)
+    pipe.execute()
+
+def transaction():
+    pipeline(transaction=True)
 
 def time(func, repeat=3, number=10e4):
     name = func.__name__

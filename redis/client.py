@@ -161,13 +161,14 @@ def dict_merge(*dicts):
     [merged.update(d) for d in dicts]
     return merged
 
-def repr_command(args):
-    "Represents a command as a string."
-    command = [args[0]]
-    if len(args) > 1:
-        command.extend(repr(x) for x in args[1:])
-
-    return ' '.join(command)
+def log_command(logger, args, level=logging.DEBUG, prefix=""):
+    if not args:
+        return
+    format = ["%s"]
+    if prefix:
+        format.insert(0, prefix)
+    format.extend("%r" for arg in args[1:])
+    logger.log(level, ' '.join(format), *args)
 
 def parse_info(response):
     "Parse the result of Redis's INFO command into a Python dict"
@@ -338,7 +339,7 @@ class Redis(threading.local):
         if self.subscribed and not subscription_command:
             raise RedisError("Cannot issue commands other than SUBSCRIBE and "
                 "UNSUBSCRIBE while channels are open")
-        log.debug(repr_command(command))
+        log_command(log, command)
         command = self._encode_command(command)
         try:
             self.connection.send(command, self)
@@ -1440,7 +1441,7 @@ class Pipeline(Redis):
             )])
         log.debug("MULTI")
         for command in commands:
-            log.debug("TRANSACTION> "+ repr_command(command[1]))
+            log_command(log, command[1], prefix="TRANSACTION>")
         log.debug("EXEC")
         self.connection.send(all_cmds, self)
         # parse off the response for MULTI and all commands prior to EXEC
@@ -1468,7 +1469,7 @@ class Pipeline(Redis):
         # build up all commands into a single request to increase network perf
         all_cmds = ''.join([self._encode_command(c) for _1, c, _2 in commands])
         for command in commands:
-            log.debug("PIPELINE> " + repr_command(command[1]))
+            log_command(log, command[1], prefix="PIPELINE>")
         self.connection.send(all_cmds, self)
         data = []
         for command_name, _, options in commands:

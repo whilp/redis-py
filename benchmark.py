@@ -56,17 +56,18 @@ tests = [command, pipeline, transaction]
 def main(argv):
     number = 10e1
     repeat = 3
-    format = "%12s: %.2f usec/pass"
+    format = "%20s: %.2f usec/pass"
+
+    print "running %d tests: %d passes, best of %d" % (
+            len(tests), number, repeat)
 
     disable_logging()
-    print "===> without logging"
     for name, result in run(tests, repeat=repeat, number=number):
-        print format % (name, result)
+        print format % (name + "-nolog", result)
 
     enable_logging()
-    print "===> with logging"
     for name, result in run(tests, repeat=repeat, number=number):
-        print format % (name, result)
+        print format % (name + "-log", result)
 
 if __name__ == "__main__":
     import sys

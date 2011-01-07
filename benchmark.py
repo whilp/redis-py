@@ -51,21 +51,22 @@ def run(tests, repeat=3, number=10e4):
 
         yield name, time(test, repeat=repeat, number=number)
 
+tests = [command, pipeline, transaction]
+
 def main(argv):
     number = 10e1
     repeat = 3
-
-    enable_logging()
-    print "===> with logging"
-    for name, result in run(tests, repeat=repeat, number=number):
-        print "%20s: %.2f usec/pass" % (name, result)
+    format = "%12s: %.2f usec/pass"
 
     disable_logging()
     print "===> without logging"
     for name, result in run(tests, repeat=repeat, number=number):
-        print "%20s: %.2f usec/pass" % (name, result)
+        print format % (name, result)
 
-tests = [command]
+    enable_logging()
+    print "===> with logging"
+    for name, result in run(tests, repeat=repeat, number=number):
+        print format % (name, result)
 
 if __name__ == "__main__":
     import sys

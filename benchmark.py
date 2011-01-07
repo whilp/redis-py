@@ -54,7 +54,7 @@ def run(tests, repeat=3, number=10e4):
 tests = [command, pipeline, transaction]
 
 def main(argv):
-    number = 10e1
+    number = 10e3
     repeat = 3
     format = "%20s: %.2f usec/pass"
 
